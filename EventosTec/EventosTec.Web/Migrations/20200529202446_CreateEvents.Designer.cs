@@ -4,40 +4,22 @@ using EventosTec.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EventosTec.Web.Migrations
 {
     [DbContext(typeof(DatadbContext))]
-    partial class DatadbContextModelSnapshot : ModelSnapshot
+    [Migration("20200529202446_CreateEvents")]
+    partial class CreateEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("EventosTec.Web.Models.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<int>("EventId");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Categories");
-                });
 
             modelBuilder.Entity("EventosTec.Web.Models.Entities.City", b =>
                 {
@@ -116,14 +98,6 @@ namespace EventosTec.Web.Migrations
                     b.HasIndex("CityId");
 
                     b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("EventosTec.Web.Models.Entities.Category", b =>
-                {
-                    b.HasOne("EventosTec.Web.Models.Entities.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EventosTec.Web.Models.Entities.Event", b =>
