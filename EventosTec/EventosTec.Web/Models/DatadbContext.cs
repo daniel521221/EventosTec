@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace EventosTec.Web.Models
 {
-    public class DatadbContext:DbContext
+    public class DatadbContext : DbContext
     {
-        public DatadbContext(DbContextOptions<DatadbContext> options):base(options)
+        public DatadbContext(DbContextOptions<DatadbContext> options) : base(options)
         {
 
         }
 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<City> Cities { get; set; }
     }
 }
