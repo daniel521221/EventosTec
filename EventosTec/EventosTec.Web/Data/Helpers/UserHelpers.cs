@@ -1,4 +1,5 @@
-﻿using EventosTec.Web.Models.Entities;
+﻿using EventosTec.Web.Models;
+using EventosTec.Web.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
