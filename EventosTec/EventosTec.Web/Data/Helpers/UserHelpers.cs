@@ -12,11 +12,26 @@ namespace EventosTec.Web.Data.Helpers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UserHelpers(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly SignInManager<User> _signInManager;
+        public UserHelpers(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
         }
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
+        {
+            return await _signInManager.PasswordSignInAsync(
+            model.Username,
+            model.Password,
+            model.RememberMe,
+            false);
+        }
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
         public async Task<IdentityResult> AddUserAssync(User user, string Password)
         {
             return await _userManager.CreateAsync(user, Password);
