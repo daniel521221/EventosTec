@@ -28,6 +28,12 @@ namespace EventosTec.Web.Models.Entities
         public int CityId { get; set; }
         [ForeignKey("CityId")]
         public City City { get; set; }
+        public int ClientId { get; set; }
+        [ForeignKey("ClientId")]
+
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
+
 
     }
 }

@@ -20,6 +20,7 @@ namespace EventosTec.Web.Models.Entities
         [ForeignKey("EventId")]
 
         public Event Event { get; set; }
+        public ICollection<Event> Events { get; set; }
 
     }
 }
