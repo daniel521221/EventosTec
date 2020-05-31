@@ -50,8 +50,13 @@ namespace EventosTec.Web.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
+            var username = User.Identity.Name;
+            var userid = _context.Clients.Where(a => a.User.Email == username).FirstOrDefault();
+            ViewBag.ClientId = userid.Id;
             ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             return View();
+
         }
 
         // POST: Events/Create
