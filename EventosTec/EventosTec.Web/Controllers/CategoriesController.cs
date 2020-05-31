@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventosTec.Web.Models;
 using EventosTec.Web.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventosTec.Web.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly DatadbContext _context;
@@ -22,8 +24,7 @@ namespace EventosTec.Web.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var datadbContext = _context.Categories.Include(c => c.Event);
-            return View(await datadbContext.ToListAsync());
+            return View(await _context.Categories.Include(e => e.Events).ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -35,7 +36,6 @@ namespace EventosTec.Web.Controllers
             }
 
             var category = await _context.Categories
-                .Include(c => c.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
@@ -48,7 +48,6 @@ namespace EventosTec.Web.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name");
             return View();
         }
 
@@ -57,7 +56,7 @@ namespace EventosTec.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,EventId")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Category category)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +64,6 @@ namespace EventosTec.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name", category.EventId);
             return View(category);
         }
 
@@ -82,7 +80,6 @@ namespace EventosTec.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name", category.EventId);
             return View(category);
         }
 
@@ -91,7 +88,7 @@ namespace EventosTec.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,EventId")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Category category)
         {
             if (id != category.Id)
             {
@@ -118,7 +115,6 @@ namespace EventosTec.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name", category.EventId);
             return View(category);
         }
 
@@ -131,7 +127,6 @@ namespace EventosTec.Web.Controllers
             }
 
             var category = await _context.Categories
-                .Include(c => c.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {

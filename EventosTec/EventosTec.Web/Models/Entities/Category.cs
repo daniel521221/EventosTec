@@ -16,11 +16,9 @@ namespace EventosTec.Web.Models.Entities
         [Display(Name="Descripcion")]
         public string Description { get; set; }
 
-        public int EventId { get; set; }
-        [ForeignKey("EventId")]
-
-        public Event Event { get; set; }
         public ICollection<Event> Events { get; set; }
+
+
 
     }
 }

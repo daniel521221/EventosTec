@@ -10,13 +10,14 @@ namespace EventosTec.Web.Models.Entities
     {
         public int Id { get; set; }
         [Required]
-        [Display(Name="Ciudad")]
+        [Display(Name = "Ciudad")]
         public string Name { get; set; }
-        [Display(Name="Descripción")]
+        [Display(Name = "Descripción")]
         public string Description { get; set; }
-        [Display(Name="País")]
+        [Display(Name = "País")]
         public string Slung { get; set; }
+        
+        public ICollection<Event> Events { get; set; }//hasta aqui si puede borrar base de datos
 
-        public ICollection<Event> Events { get; set; }
     }
 }
