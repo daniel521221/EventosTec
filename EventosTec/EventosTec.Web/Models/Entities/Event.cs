@@ -34,7 +34,7 @@ namespace EventosTec.Web.Models.Entities
 
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        //todavia borra
+
 
 
     }

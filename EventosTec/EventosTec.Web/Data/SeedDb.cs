@@ -17,13 +17,14 @@ namespace EventosTec.Web.Data
             dc = db;
             uh = iuh;
         }
+
         public async Task SeedAsync()
         {
             await dc.Database.EnsureCreatedAsync();
             await CheckRoles();
-            var manager = await CheckUserAsync("Daniel", "Camacho", "admin@adminmail.com", "664 123 45 67",
+            var manager = await CheckUserAsync("Leonardo", "Sañudo", "Leonardo@mail.com", "664 123 45 67",
                  "Admin");
-            var customer = await CheckUserAsync("Leonardo", "Sañudo", "cliente@clientemail.com", "664 987 65 43",
+            var customer = await CheckUserAsync("Daniel", "Camacho", "Daniel@mail.com", "664 987 65 43",
                  "Client");
             await CheckManagerAsync(manager);
             await CheckClientAsync(customer);
@@ -42,9 +43,8 @@ namespace EventosTec.Web.Data
                 dc.Clients.Add(new Client { User = user });
                 await dc.SaveChangesAsync();
             }
-
-
         }
+
         private async Task CheckManagerAsync(User user)
         {
             if (!dc.Managers.Any())
@@ -53,8 +53,9 @@ namespace EventosTec.Web.Data
                 await dc.SaveChangesAsync();
             }
         }
+
         private async Task<User> CheckUserAsync(string firstName, string lastName, string email,
-    string phone, string rol)
+            string phone, string rol)
         {
             var user = await uh.GetUserByEmailAsync(email);
             if (user == null)
@@ -72,5 +73,6 @@ namespace EventosTec.Web.Data
             }
             return user;
         }
+
     }
 }
