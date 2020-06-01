@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EventosTec.Web.Models;
-using EventosTec.Web.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EventosTec.Web.Models;
+using EventosTec.Web.Models.Entities;
+using EventosTec.Web.Models.ModelApi;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EventosTec.Web.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoriesController : ControllerBase
     {
         private readonly DatadbContext _context;
@@ -37,14 +41,31 @@ namespace EventosTec.Web.Controllers.API
                 return BadRequest(ModelState);
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.Include(a => a.Events)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            var response = new CategoryResponse
+            {
+                Description = category.Description,
+                Name = category.Name,
+                Id = category.Id,
+                Events = category.Events.Select(p => new EventResponse
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Duration = p.Duration,
+                    EventDate = p.EventDate,
+                    People = p.People,
+                    Description = p.Description,
+                }).ToList(),
+            };
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            return Ok(category);
+            return Ok(response);
         }
 
         // PUT: api/Categories/5

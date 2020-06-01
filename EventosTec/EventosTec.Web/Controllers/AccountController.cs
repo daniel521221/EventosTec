@@ -1,20 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using EventosTec.Web.Data.Helpers;
 using EventosTec.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventosTec.Web.Controllers
 {
     public class AccountController : Controller
     {
         private readonly UserHelper iuhelper;
-        public AccountController(UserHelper userHelper)
+        private readonly IConfiguration config;
+        public AccountController(UserHelper userHelper, IConfiguration configuration)
         {
             iuhelper = userHelper;
+            config = configuration;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateToken([FromBody]LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await iuhelper.GetUserByEmailAsync(model.Username);
+                if (user != null)
+                {
+                    var result = await iuhelper.ValidatePasswordAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        var claims = new[]
+                        {
+                            new Claim(JwtRegisteredClaimNames.Sub,user.Email),
+                            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                        };
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Tokens:key"]));
+                        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                        var token = new JwtSecurityToken(
+                            config["Tokens:Issuer"],
+                            config["Tokens:Audience"],
+                            claims,
+                            expires: DateTime.UtcNow.AddDays(15),
+                            signingCredentials: credentials);
+                        var results = new
+                        {
+                            token = new JwtSecurityTokenHandler().WriteToken(token),
+                            expiration = token.ValidTo
+                        };
+                        return Created(string.Empty, results);
+                    }
+                }
+
+            }
+            return BadRequest();
+        }
+
         public IActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
@@ -40,6 +86,7 @@ namespace EventosTec.Web.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "Failed to login.");
+
             return View(model);
         }
         public async Task<IActionResult> Logout()
@@ -47,6 +94,7 @@ namespace EventosTec.Web.Controllers
             await iuhelper.LogoutAsync();
             return RedirectToAction("Index", "Home");
         }
+
 
     }
 }

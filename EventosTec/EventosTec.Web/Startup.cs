@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using EventosTec.Web.Data;
 using EventosTec.Web.Data.Helpers;
@@ -16,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventosTec.Web
 {
@@ -53,6 +55,17 @@ namespace EventosTec.Web
             {
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddAuthentication()
+              .AddCookie()
+              .AddJwtBearer(cfg => {
+                  cfg.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidIssuer = Configuration["Tokens:Issuer"],
+                      ValidAudience = Configuration["Tokens:Audience"],
+                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
+                  };
+              });
+
             services.AddTransient<SeedDb>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
